@@ -4,14 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os"
 
-	handler "github.com/fdg312/ecommerce-microservices/internal/handlers"
+	"github.com/fdg312/ecommerce-microservices/internal/grpc"
 	"github.com/fdg312/ecommerce-microservices/internal/repository"
 	"github.com/fdg312/ecommerce-microservices/internal/service"
+	"github.com/fdg312/ecommerce-microservices/pkg/auth_v1"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	google_grpc "google.golang.org/grpc"
 )
 
 func main() {
@@ -33,12 +35,23 @@ func main() {
 
 	repo := repository.NewUserRepository(conn)
 	s := service.NewAuthService(repo)
-	h := handler.NewAuthHandler(s)
+	// h := handler.NewAuthHandler(s)
 
-	mux := http.NewServeMux()
+	// mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /register", h.Register)
-	mux.HandleFunc("POST /login", h.Login)
+	// mux.HandleFunc("POST /register", h.Register)
+	// mux.HandleFunc("POST /login", h.Login)
 
-	http.ListenAndServe(":8080", mux)
+	// http.ListenAndServe(":8080", mux)
+
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("couldn`t connect to tcp: %w", err)
+	}
+
+	ser := grpc.NewAuthServer(s)
+
+	grpcServer := google_grpc.NewServer()
+	auth_v1.RegisterAuthServiceServer(grpcServer, ser)
+	grpcServer.Serve(lis)
 }

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/fdg312/ecommerce-microservices/internal/service"
@@ -31,8 +30,7 @@ func (h *Auth) Register(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Register(r.Context(), req.Email, req.Password)
 	if err != nil {
-		log.Printf(err.Error())
-		// http.Error(w, "internal error", http.StatusInternalServerError)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)

@@ -35,23 +35,17 @@ func main() {
 
 	repo := repository.NewUserRepository(conn)
 	s := service.NewAuthService(repo)
-	// h := handler.NewAuthHandler(s)
-
-	// mux := http.NewServeMux()
-
-	// mux.HandleFunc("POST /register", h.Register)
-	// mux.HandleFunc("POST /login", h.Login)
-
-	// http.ListenAndServe(":8080", mux)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("couldn`t connect to tcp: %w", err)
+		log.Fatalf("couldn`t connect to tcp: %v", err)
 	}
 
 	ser := grpc.NewAuthServer(s)
 
-	grpcServer := google_grpc.NewServer()
+	inter := grpc.NewInterceptorManager(*s)
+
+	grpcServer := google_grpc.NewServer(google_grpc.UnaryInterceptor(inter.AuthInterceptor))
 	auth_v1.RegisterAuthServiceServer(grpcServer, ser)
 	grpcServer.Serve(lis)
 }

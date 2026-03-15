@@ -67,3 +67,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 
 	return readyToken, nil
 }
+
+func (s *AuthService) VerifyToken(ctx context.Context, token string) (string, error) {
+	return "dummy_token", nil
+}

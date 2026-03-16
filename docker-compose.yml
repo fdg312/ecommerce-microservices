@@ -10,3 +10,19 @@ services:
      restart: always
      ports:
        - "6379:6379"
+   auth:
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      ports:
+        - "50051:50051"
+      depends_on:
+        - postgres
+   cart:
+     build:
+        context: .
+        dockerfile: ./Dockerfile.cart
+     ports:
+       - "50052:50052"
+     depends_on:
+       - cache

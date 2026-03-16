@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "github.com/fdg312/ecommerce-microservices/pkg/cart_v1";
+
+message AddItemRequest {
+  string title = 1;
+  string price = 2;
+}
+
+message AddItemResponse {
+  string item_id = 1;
+}
+
+service CartService {
+  rpc AddItem(AddItemRequest) returns (AddItemResponse);
+}

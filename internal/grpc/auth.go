@@ -32,3 +32,11 @@ func (s *AuthServer) Login(ctx context.Context, r *auth_v1.LoginRequest) (*auth_
 	}
 	return &auth_v1.LoginResponse{Token: token}, nil
 }
+
+func (s *AuthServer) VerifyToken(ctx context.Context, r *auth_v1.VerifyTokenRequest) (*auth_v1.VerifyTokenResponse, error) {
+	userId, err := s.service.VerifyToken(ctx, r.GetToken())
+	if err != nil {
+		return nil, fmt.Errorf("couldn`t : %w", err)
+	}
+	return &auth_v1.VerifyTokenResponse{UserId: userId}, nil
+}
